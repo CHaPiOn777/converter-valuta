@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { TResponce, convertValuta, getValuta } from "../../api/api";
 import styles from "./App.module.css";
+import { Arrow } from "../../img/arrow";
 type TOp = {
   string: number;
 };
@@ -36,51 +37,66 @@ function App() {
 
   useEffect(() => {
     convertValuta(from, to).then((res) => {
-      setConvertResult(res.result * inputValue);
+      setConvertResult(Number((res.result * inputValue).toFixed(2)));
     });
   }, [inputValue, from, to]);
 
   return (
-    <form action="" className={styles.form} onSubmit={(e) => handleSubmit(e)}>
-      <label htmlFor="" className={styles.label}>
+    <form onSubmit={(e) => handleSubmit(e)}>
+      <label htmlFor="" className={styles.form}>
         Конвертер валют
-        <input
-          name="to"
-          list="valutaFrom"
-          type="text"
-          onChange={(e) => hendleChangeInput(e)}
-        />
-        <select
-          id="valutaFrom"
-          value={from}
-          onChange={(e) => handleChangeFrom(e)}
-        >
-          {valuta &&
-            Object.keys(valuta).map((item, index) => {
-              return (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              );
-            })}
-        </select>
-        <input
-          name="to"
-          value={convertResult}
-          list="valutaTo"
-          type="text"
-          readOnly
-        />
-        <select id="valutaTo" value={to} onChange={(e) => handleChangeTo(e)}>
-          {valuta &&
-            Object.keys(valuta).map((item, index) => {
-              return (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              );
-            })}
-        </select>
+        <div className={`${styles.inputContainer} ${styles.inputContainerMarginTop}`}>
+          <input
+            className={styles.input}
+            name="to"
+            list="valutaFrom"
+            type="text"
+            onChange={(e) => hendleChangeInput(e)}
+          />
+          <Arrow className={styles.arrow} />
+          <select
+            className={styles.select}
+            id="valutaFrom"
+            value={from}
+            onChange={(e) => handleChangeFrom(e)}
+          >
+            {valuta &&
+              Object.keys(valuta).map((item, index) => {
+                return (
+                  <option className={styles.option} key={index} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
+          </select>
+        </div>
+        <div className={styles.inputContainer}>
+          <input
+            disabled
+            className={styles.input}
+            name="to"
+            value={convertResult}
+            list="valutaTo"
+            type="text"
+            readOnly
+          />
+          <Arrow className={styles.arrow} />
+          <select
+            className={styles.select}
+            id="valutaTo"
+            value={to}
+            onChange={(e) => handleChangeTo(e)}
+          >
+            {valuta &&
+              Object.keys(valuta).map((item, index) => {
+                return (
+                  <option key={index} value={item}>
+                    {item}
+                  </option>
+                );
+              })}
+          </select>
+        </div>
       </label>
     </form>
   );
