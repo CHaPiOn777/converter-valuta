@@ -1,37 +1,87 @@
-import React, { useEffect, useState } from "react";
-import { TResponce, getValuta } from "../../api/api";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { TResponce, convertValuta, getValuta } from "../../api/api";
 import styles from "./App.module.css";
 type TOp = {
-  value: number;
-  code: string;
+  string: number;
 };
 
 function App() {
-  let [valuta, setValuta] = useState<any>([]);
-  let a: any = [{}];
+  const [valuta, setValuta] = useState({});
+  const [from, setFrom] = useState<string>("RUB");
+  const [to, setTo] = useState<string>("USD");
+  const [convertResult, setConvertResult] = useState<number>(0);
+  const [inputValue, setInputValue] = useState<number>(0);
+
   useEffect(() => {
     getValuta().then((res) => {
-      let key = Object.keys(res.data);
-      for (let asd of key) {
-        a[asd] = res.data[asd].value;
-
-        setValuta([a]);
-      }
+      setValuta(res.rates);
     });
   }, []);
-  console.log(valuta);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
+
+  const handleChangeFrom = (e: ChangeEvent<HTMLSelectElement>) => {
+    setFrom(e.target.value);
+  };
+
+  const handleChangeTo = (e: ChangeEvent<HTMLSelectElement>) => {
+    setTo(e.target.value);
+  };
+
+  const hendleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(Number(e.target.value));
+  };
+
+  useEffect(() => {
+    convertValuta(from, to).then((res) => {
+      setConvertResult(res.result * inputValue);
+    });
+  }, [inputValue, from, to]);
+
   return (
-    <form action="" className={styles.form}>
+    <form action="" className={styles.form} onSubmit={(e) => handleSubmit(e)}>
       <label htmlFor="" className={styles.label}>
         Конвертер валют
+        <input
+          name="to"
+          list="valutaFrom"
+          type="text"
+          onChange={(e) => hendleChangeInput(e)}
+        />
+        <select
+          id="valutaFrom"
+          value={from}
+          onChange={(e) => handleChangeFrom(e)}
+        >
+          {valuta &&
+            Object.keys(valuta).map((item, index) => {
+              return (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              );
+            })}
+        </select>
+        <input
+          name="to"
+          value={convertResult}
+          list="valutaTo"
+          type="text"
+          readOnly
+        />
+        <select id="valutaTo" value={to} onChange={(e) => handleChangeTo(e)}>
+          {valuta &&
+            Object.keys(valuta).map((item, index) => {
+              return (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              );
+            })}
+        </select>
       </label>
-      <input name="to" list="valuta" type="text" />
-      <datalist id="valuta">
-        {/* {valuta.map((item) => {
-          console.log(item);
-          return <option value={item}>{item}</option>;
-        })} */}
-      </datalist>
     </form>
   );
 }
