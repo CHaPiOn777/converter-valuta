@@ -1,6 +1,6 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styles from "./InputContainer.module.css";
-import { convertValuta, getValuta } from "../../../api/api";
+import { convertValuta, getCountry, getValuta } from "../../../api/api";
 import { Arrow } from "../../../img/arrow";
 
 const InputContainer = () => {
@@ -9,12 +9,21 @@ const InputContainer = () => {
   const [to, setTo] = useState<string>("USD");
   const [convertResult, setConvertResult] = useState<number>(0);
   const [inputValue, setInputValue] = useState<number>(0);
+  const [flagFrom, setFlagFrom] = useState()
 
   useEffect(() => {
     getValuta().then((res) => {
       setValuta(res.rates);
     });
   }, []);
+
+  let flagForm = useMemo(() => {
+    return from.slice(0, 2).toLowerCase()
+  }, [from]);
+
+  let flagTo = useMemo(() => {
+    return to.slice(0, 2).toLowerCase()
+  }, [to]);
 
   useEffect(() => {
     convertValuta(from, to).then((res) => {
@@ -33,6 +42,8 @@ const InputContainer = () => {
   const hendleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(Number(e.target.value));
   };
+
+
   return (
     <>
       <div
@@ -61,6 +72,7 @@ const InputContainer = () => {
               );
             })}
         </select>
+        <span className={`fi fi-${flagForm}`}></span>
       </div>
       <div className={styles.inputContainer}>
         <input
@@ -88,6 +100,8 @@ const InputContainer = () => {
               );
             })}
         </select>
+        <span className={`fi fi-${flagTo}`}></span>
+
       </div>
     </>
   );

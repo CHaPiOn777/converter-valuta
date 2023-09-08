@@ -1,6 +1,7 @@
 import { SetStateAction } from "react";
 
-const API_KEY = '7753040aef409cb121b04d44ff1d9fcb'
+const API_KEY = '47f2b1ef72deea1bace6ab6e8d38c347c301201a';
+const countryURL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/country'
 const baseURL = `https://api.exchangerate.host/latest`;
 
 const convertURL = (from:string, to:string) => {
@@ -17,15 +18,24 @@ type TOptions = {
   headers?: HeadersInit | undefined;
 }
 
-export type TResponce = {
-  
-}
-let options = {
+const optionsGET = {
   method: "GET",
   mode: "cors",
   headers: {
       "Content-Type": "application/json",
       "Accept": "application/json"
+  }
+}
+const optionsPOST = (query?:any) => {
+  return {
+    method: "POST",
+    mode: "cors",
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Token " + API_KEY
+    },
+    body: JSON.stringify({query: 'USA'})
   }
 }
 export async function request(url: string, options: TOptions) {
@@ -35,9 +45,13 @@ export async function request(url: string, options: TOptions) {
 }
 
 export const getValuta = () => {
-  return request(baseURL, options)
+  return request(baseURL, optionsGET)
 }
 
 export const convertValuta = (from:string, to:string) => {
-  return request(convertURL(from, to), options)
+  return request(convertURL(from, to), optionsGET)
+}
+
+export const getCountry = (query?:any) => {
+  return request(countryURL, optionsPOST(query))
 }
