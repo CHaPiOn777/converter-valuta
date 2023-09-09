@@ -1,4 +1,3 @@
-import { SetStateAction } from "react";
 
 const API_KEY = '47f2b1ef72deea1bace6ab6e8d38c347c301201a';
 const countryURL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/country'
@@ -16,7 +15,9 @@ type TOptions = {
   method?: string;
   body?: BodyInit | null | undefined;
   headers?: HeadersInit | undefined;
-}
+};
+
+
 
 const optionsGET = {
   method: "GET",
@@ -26,7 +27,8 @@ const optionsGET = {
       "Accept": "application/json"
   }
 }
-const optionsPOST = (query?:any) => {
+const optionsPOST = (query:string) => {
+  console.log(query)
   return {
     method: "POST",
     mode: "cors",
@@ -35,7 +37,7 @@ const optionsPOST = (query?:any) => {
         "Accept": "application/json",
         "Authorization": "Token " + API_KEY
     },
-    body: JSON.stringify({query: 'USA'})
+    body: JSON.stringify({query: 'IRR'})
   }
 }
 export async function request(url: string, options: TOptions) {
@@ -52,6 +54,6 @@ export const convertValuta = (from:string, to:string) => {
   return request(convertURL(from, to), optionsGET)
 }
 
-export const getCountry = (query?:any) => {
+export const getCountry = (query:string) => {
   return request(countryURL, optionsPOST(query))
 }

@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styles from "./InputContainer.module.css";
 import { convertValuta, getCountry, getValuta } from "../../../api/api";
 import { Arrow } from "../../../img/arrow";
+import { arrCountry } from "../../../utils/fileWithArray";
 
 const InputContainer = () => {
   const [valuta, setValuta] = useState({});
@@ -9,7 +10,8 @@ const InputContainer = () => {
   const [to, setTo] = useState<string>("USD");
   const [convertResult, setConvertResult] = useState<number>(0);
   const [inputValue, setInputValue] = useState<number>(0);
-  const [flagFrom, setFlagFrom] = useState()
+  const [fromCountry, setFromCountry] = useState<(string[] | undefined)[]>([]);
+  const [toCountry, setToCountry] = useState<(string[] | undefined)[]>([]);
 
   useEffect(() => {
     getValuta().then((res) => {
@@ -17,12 +19,32 @@ const InputContainer = () => {
     });
   }, []);
 
+  useEffect(() => {
+    setFromCountry(
+      arrCountry
+        .map((item) => {
+          if (item.includes(from)) return item;
+        })
+        .filter(Boolean)
+    );
+  }, [from]);
+
+  useEffect(() => {
+    setToCountry(
+      arrCountry
+        .map((item) => {
+          if (item.includes(to)) return item;
+        })
+        .filter(Boolean)
+    );
+  }, [to]);
+
   let flagForm = useMemo(() => {
-    return from.slice(0, 2).toLowerCase()
+    return from.slice(0, 2).toLowerCase();
   }, [from]);
 
   let flagTo = useMemo(() => {
-    return to.slice(0, 2).toLowerCase()
+    return to.slice(0, 2).toLowerCase();
   }, [to]);
 
   useEffect(() => {
@@ -42,7 +64,6 @@ const InputContainer = () => {
   const hendleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(Number(e.target.value));
   };
-
 
   return (
     <>
@@ -72,6 +93,12 @@ const InputContainer = () => {
               );
             })}
         </select>
+        <p>
+          {fromCountry &&
+            fromCountry.map((item) => {
+              return item && item[0];
+            })}
+        </p>
         <span className={`fi fi-${flagForm}`}></span>
       </div>
       <div className={styles.inputContainer}>
@@ -101,7 +128,10 @@ const InputContainer = () => {
             })}
         </select>
         <span className={`fi fi-${flagTo}`}></span>
-
+        {toCountry &&
+            toCountry.map((item) => {
+              return item && item[0];
+            })}
       </div>
     </>
   );
